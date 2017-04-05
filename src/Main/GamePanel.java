@@ -6,8 +6,11 @@ import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
-import GameState.GameStateManager;
+
 import javax.swing.JPanel;
+
+import Audio.AudioPlayer;
+import GameState.GameStateManager;
 
 public class GamePanel extends JPanel implements Runnable, KeyListener{
 	 
@@ -20,6 +23,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 	
 	//Threads
 	private Thread thread;
+	private Thread audio;
 	private boolean running;
 	private int FPS = 60;
 	private int targetTime = 1000 / FPS;
@@ -42,7 +46,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		super.addNotify();
 		if(thread == null){
 			thread = new Thread(this);
+			audio = new AudioPlayer("/Music/MegaMan.mp3");
 			addKeyListener(this);
+			audio.start();
 			thread.start();
 		}
 	}

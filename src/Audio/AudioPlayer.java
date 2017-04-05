@@ -3,11 +3,11 @@ package Audio;
 import javax.sound.sampled.*;
 
 
-public class AudioPlayer {
+public class AudioPlayer extends Thread{
 	
 	private Clip clip;
 
-	public AudioPlayer(String path){
+	public AudioPlayer(String path) {
 		
 		try{
 			
@@ -31,19 +31,27 @@ public class AudioPlayer {
 		}
 	}
 	
+	@Override
+	public void run(){
+		play();
+		
+	}
+	
 	public void play(){
 		if(clip == null) return;
-		stop();
+		//stop();
 		clip.setFramePosition(0);
 		clip.start();
 	}
-	
+	/*
 	public void stop(){
 		if(clip.isRunning()) clip.stop();
 	}
-	
+	*/
 	public void close(){
-		stop();
+		//stop();
 		clip.close();	
 	}
+
+	
 }

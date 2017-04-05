@@ -1,7 +1,7 @@
 package GameState;
 
 import java.awt.Graphics2D;
-import java.awt.Point;
+//import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import Audio.AudioPlayer;
@@ -39,7 +39,7 @@ public class Level1State extends GameState{
 	public void init(){
 		
 		tileMap = new TileMap(30);
-		tileMap.loadTile("/Tilesets/grasstileset1.gif");
+		tileMap.loadTiles("/Tilesets/grasstileset1.gif");
 		tileMap.loadMap("/Maps/level1-1.map");
 		tileMap.setPosition(0, 0);
 		tileMap.setTween(0.7);
@@ -54,15 +54,15 @@ public class Level1State extends GameState{
 		
 		hud = new HUD(player);
 		
-		music = new AudioPlayer("/Music/MegaMan.mp3");
-		music.play();
+		//music = new AudioPlayer("/Music/MegaMan.mp3");
+		//music.play();
 	}
 	
 	private void populateEnemies(){
 		
 		enemies = new ArrayList<Enemy>();
 		Slugger s;
-		/*
+		
 		s = new Slugger(tileMap);
 		s.setPosition(150, 100);
 		enemies.add(s);
@@ -81,8 +81,8 @@ public class Level1State extends GameState{
 		s = new Slugger(tileMap);
 		s.setPosition(2000, 200);
 		enemies.add(s);
-		*/
 		
+		/*
 		Point[] points = new Point[]{
 			    new Point(150, 100),
 				new Point(860, 200),
@@ -96,14 +96,14 @@ public class Level1State extends GameState{
 				s.setPosition(points[i].x, points[i].y);
 				enemies.add(s);
 			}
-		
+		*/
 	}
 	
 	public void update(){
 		//update()
 		player.update();
 		tileMap.setPosition(GamePanel.width / 2 - player.getX(), GamePanel.height / 2 - player.getY());
-		System.out.println(tileMap.getX());
+		//System.out.println(tileMap.getX());
 		//enables the background to follow the player
 		bg.setPosition(tileMap.getX(), tileMap.getY());
 		

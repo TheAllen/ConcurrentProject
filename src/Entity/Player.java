@@ -93,7 +93,7 @@ public class Player extends MapObject{
 		
 		facingRight = true;
 		
-		health = maxHealth = 2;
+		health = maxHealth = 25;
 		fire = maxFire = 25;
 		
 		fireCost = 2;
@@ -200,40 +200,64 @@ public class Player extends MapObject{
 			
 			Enemy e = enemies.get(i);
 			
-			//scratch attack
-			if(scratching){
-				if(facingRight){
-					if(e.getX() > x && 
-					   e.getX() < x + scratchRange && 
-					   e.getY() > y - height / 2 &&
-					   e.getY() < y + height / 2)
-					{	
-					     e.hit(scratchDamage);				
+			Thread checkScratch = new Thread(new Runnable() {
+				public void run() {
+					//scratch attack
+					if(scratching){
+						if(facingRight){
+							if(e.getX() > x && 
+							   e.getX() < x + scratchRange && 
+							   e.getY() > y - height / 2 &&
+							   e.getY() < y + height / 2)
+							{	
+							     e.hit(scratchDamage);				
+							}
+						}
+						else{
+							if(e.getX() < x &&
+							   e.getX() > x - scratchRange &&
+							   e.getY() > y - height / 2 &&
+							   e.getY() < y + height / 2)
+							        {
+										e.hit(scratchDamage);
+									}
+						}
 					}
 				}
-				else{
-					if(e.getX() < x &&
-					   e.getX() > x - scratchRange &&
-					   e.getY() > y - height / 2 &&
-					   e.getY() < y + height / 2)
-					        {
-								e.hit(scratchDamage);
-							}
-				}
-			}
+			});
 			
-			//fireBalls
-			for(int j = 0; j < fireBalls.size(); j++){
-				if(fireBalls.get(j).intersects(e)){
-					e.hit(fireBallDamage);
-					fireBalls.get(j).setHit();
-					break;
+			Thread checkFireBalls = new Thread(new Runnable() {
+				public void run() {
+					//fireBalls
+					for(int j = 0; j < fireBalls.size(); j++){
+						if(fireBalls.get(j).intersects(e)){
+							e.hit(fireBallDamage);
+							fireBalls.get(j).setHit();
+							break;
+						}
+					}
 				}
-			}
+			});
 			
-			//check enemy collision
-			if(intersects(e)){
-				hit(e.getDamage());
+		
+			Thread checkCollision = new Thread(new Runnable() {
+				public void run() {
+					//check enemy collision
+					if(intersects(e)){
+						hit(e.getDamage());
+					}
+				}
+			});
+			
+			checkScratch.start();
+			checkFireBalls.start();
+			checkCollision.start();
+			try {
+				checkScratch.join();
+				checkFireBalls.join();
+				checkCollision.join();
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
 			}
 		}
 
@@ -330,13 +354,9 @@ public class Player extends MapObject{
 		checkVertical.start();
 		try {
 			checkHorizontal.join();
+			checkVertical.join();
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
-		}
-		try {
-			checkVertical.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
 		}
 	}
 	
@@ -479,23 +499,8 @@ public class Player extends MapObject{
 		setAnimation.start();
 		try {
 			checkAction.join();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-//		try {
 //			checkFireBalls.join();
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		try {
 			checkFlinchingAndFace.join();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
 			setAnimation.join();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block

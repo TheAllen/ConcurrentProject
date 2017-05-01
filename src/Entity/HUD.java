@@ -30,11 +30,31 @@ public class HUD {
 		
 		g.drawImage(image, 0, 0, null);
 		g.setFont(font);
-		g.drawString(player.getHealth() + "/" + player.getMaxHealth(), 30, 15);
+		Thread drawHealth = new Thread(new Runnable() {
+			public void run() {
+				g.drawString(player.getHealth() + "/" + player.getMaxHealth(), 30, 15);
+			}
+		});
+		Thread drawFire = new Thread(new Runnable() {
+			public void run() {
+				g.drawString(player.getFire() + "/" + player.getMaxFire(), 20, 35);
+			}
+		});
+		Thread drawEnemyCount = new Thread(new Runnable() {
+			public void run() {
+				g.drawString(s.getEnemyCount() + "/" + "5", 30, 55);
+			}
+		});
 		
-		g.drawString(player.getFire() + "/" + player.getMaxFire(), 20, 35);
-		
-		g.drawString(s.getEnemyCount() + "/" + "5", 30, 55);
-		
+		drawHealth.start();
+		drawFire.start();
+		drawEnemyCount.start();
+		try {
+			drawHealth.join();
+			drawFire.join();
+			drawEnemyCount.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 }

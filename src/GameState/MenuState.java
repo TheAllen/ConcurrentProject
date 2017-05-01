@@ -5,6 +5,9 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 
+import javax.swing.JOptionPane;
+
+import Main.GamePanel;
 import TileMap.Background;
 
 public class MenuState extends GameState{
@@ -19,6 +22,8 @@ public class MenuState extends GameState{
 	private Color titleColor;
 	private Font titleFont;
 	private Font font;
+	
+	private GamePanel gp;
 	
 	
 	public MenuState(GameStateManager gsm){
@@ -81,6 +86,7 @@ public class MenuState extends GameState{
 		}
 		if(currentChoice == 1){
 			//Help
+			JOptionPane.showMessageDialog(gp, "Press Start to Play. Press Quit to exit the game.");
 		}
 		if(currentChoice == 2){
 			//Quit

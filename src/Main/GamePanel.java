@@ -46,6 +46,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		super.addNotify();
 		if(thread == null){
 			thread = new Thread(this);
+			//audio = new Thread(new AudioPlayer("/Music/MegaMan.mp3"));
 			audio = new AudioPlayer("/Music/MegaMan.mp3");
 			addKeyListener(this);
 			audio.start();
@@ -64,11 +65,11 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		
 	}
 	
-	public void update(){
+	public synchronized void update(){
 		gsm.update();
 	}
 	
-	public void draw(){
+	public synchronized void draw(){
 		gsm.draw(g);
 	}
 	

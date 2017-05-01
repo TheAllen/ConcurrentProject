@@ -1,9 +1,13 @@
 package GameState;
 
 import java.awt.Graphics2D;
+import java.awt.Point;
 //import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+
+import javax.swing.*;
+
 import Audio.AudioPlayer;
 import Entity.Enemy;
 import Entity.Explosion;
@@ -19,9 +23,9 @@ public class Level1State extends GameState{
 	
 	private TileMap tileMap;
 	private Background bg;
-	
+	private GamePanel gp;
 	private Player player;
-	
+	private Slugger s;
 	private ArrayList<Enemy> enemies;
 	private ArrayList<Explosion> explosions;
 	
@@ -52,7 +56,7 @@ public class Level1State extends GameState{
 		
 		explosions = new ArrayList<Explosion>();
 		
-		hud = new HUD(player);
+		hud = new HUD(player, this);
 		
 		//music = new AudioPlayer("/Music/MegaMan.mp3");
 		//music.play();
@@ -61,8 +65,8 @@ public class Level1State extends GameState{
 	private void populateEnemies(){
 		
 		enemies = new ArrayList<Enemy>();
-		Slugger s;
-		
+		//Slugger s;
+		/*
 		s = new Slugger(tileMap);
 		s.setPosition(150, 100);
 		enemies.add(s);
@@ -82,13 +86,13 @@ public class Level1State extends GameState{
 		s.setPosition(2000, 200);
 		enemies.add(s);
 		
-		/*
+		*/
 		Point[] points = new Point[]{
 			    new Point(150, 100),
-				new Point(860, 200),
-				new Point(1525, 200),
-				new Point(1682, 200),
-				new Point(1800, 200)
+				new Point(860, 100),
+				new Point(1525, 100),
+				new Point(1800, 100),
+				new Point(2600, 100)
 			};
 			
 			for(int i = 0; i < points.length; i++){
@@ -96,7 +100,11 @@ public class Level1State extends GameState{
 				s.setPosition(points[i].x, points[i].y);
 				enemies.add(s);
 			}
-		*/
+		
+	}
+	
+	public int getEnemyCount(){
+		return enemies.size();
 	}
 	
 	public void update(){
@@ -130,6 +138,11 @@ public class Level1State extends GameState{
 				explosions.remove(i);
 				i--;
 			}
+		}
+		
+		if(getEnemyCount() == 0){
+			JOptionPane.showMessageDialog(gp, "You've beat the game!!");
+			System.exit(0);
 		}
 	}
 	

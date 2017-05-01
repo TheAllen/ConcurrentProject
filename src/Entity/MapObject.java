@@ -97,6 +97,7 @@ public abstract class MapObject{
 		bottomRight = br == Tile.BLOCKED;
 	}
 	
+	//Also physics component
 	public void checkTileMapCollision(){
 		currCol = (int)x / tileSize;
 		currRow = (int)y / tileSize;

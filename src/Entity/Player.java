@@ -248,6 +248,7 @@ public class Player extends MapObject{
 		flinchTime = System.nanoTime();
 	}
 	
+	//Physics aspect
 	private void getNextPosition(){
 		
 		//movement

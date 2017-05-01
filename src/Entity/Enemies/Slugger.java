@@ -41,13 +41,13 @@ public class Slugger extends Enemy{
 		}catch(Exception e){
 			e.printStackTrace();
 		}
+		right = true;
+		facingRight = true;
 		
 		animation = new Animation();
 		animation.setFrames(sprites);
 		animation.setDelay(200);
 		
-		right = true;
-		facingRight = true;
 	}
 
 	private void getNextPosition(){

@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JPanel;
 
@@ -27,6 +28,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 	private boolean running;
 	private int FPS = 60;
 	private int targetTime = 1000 / FPS;
+	public AtomicBoolean drawn;
 	
 	//image 
 	private BufferedImage image;
@@ -34,12 +36,16 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 	
 	private GameStateManager gsm;
 	
+	long start;
+	long elapsed;
+	long wait;
 	
 	public GamePanel(){
 		super();
 		setPreferredSize(new Dimension(width*scale, height*scale));
 		setFocusable(true);
 		requestFocus();
+		drawn = new AtomicBoolean(true);
 	}
 	
 	public void addNotify(){
@@ -82,30 +88,40 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 	public void run(){
 		init();
 		
-		long start;
-		long elapsed;
-		long wait;
-		
-		while(running){
-			
-			start = System.nanoTime();
-			
-			update();
-			draw();
-			drawToScreen();
-			
-			elapsed = System.nanoTime() - start;
-			
-			wait = targetTime - elapsed / 1000000;
-			
-			if(wait < 0) wait = 5;
-			try{
-				Thread.sleep(wait);
-			}catch(Exception e){
-				e.printStackTrace();
+		Thread updateThread = new Thread(new Runnable() {
+			public void run() {
+				while (running) {
+					while (!drawn.get()) {};
+					start = System.nanoTime();
+					update();
+					drawn.set(false);
+				}
 			}
-			
-		}
+		});
+		
+		Thread drawThread = new Thread(new Runnable() {
+			public void run() {
+				while (running) {
+					while (drawn.get()) {};
+					draw();
+					drawn.set(true);
+					drawToScreen();
+					elapsed = System.nanoTime() - start;
+					System.out.println(elapsed);
+					wait = targetTime - elapsed / 1000000;
+					if(wait < 0) wait = 5;
+					try{
+						Thread.sleep(wait);
+					}catch(Exception e){
+						e.printStackTrace();
+					}
+				}
+			}
+		});
+		
+		updateThread.start();
+		drawThread.start();
+		
 	}
 	
 	public void keyTyped(KeyEvent key){

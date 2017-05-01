@@ -87,72 +87,92 @@ public abstract class MapObject{
 		int bottomTile = (int)(y + cheight / 2 - 1) / tileSize;
 		
 		int tl = tileMap.getType(topTile, leftTile);
-		int tr = tileMap.getType(topTile, rightTile);
-		int bl = tileMap.getType(bottomTile, leftTile);
-		int br = tileMap.getType(bottomTile, rightTile);
-		
 		topLeft = tl == Tile.BLOCKED;
+		int tr = tileMap.getType(topTile, rightTile);
 		topRight = tr == Tile.BLOCKED;
+		int bl = tileMap.getType(bottomTile, leftTile);
 		bottomLeft = bl == Tile.BLOCKED;
+		int br = tileMap.getType(bottomTile, rightTile);
 		bottomRight = br == Tile.BLOCKED;
+
 	}
 	
 	//Also physics component
 	public void checkTileMapCollision(){
-		currCol = (int)x / tileSize;
-		currRow = (int)y / tileSize;
+
 		
-		xtemp = x;
-		ytemp = y;
-		
-		xdest = x + dx;
-		ydest = y + dy;
-		
-		calculateCorners(x, ydest);
-		if(dy < 0){
-			if(topLeft || topRight){
-				dy = 0;
-				ytemp = currRow * tileSize + cheight / 2;
-			}else{
-				ytemp += dy;
+		Thread calcX = new Thread(new Runnable() {
+			public void run() {
+				currCol = (int)x / tileSize;
+				xtemp = x;
+				xdest = x + dx;
+				calculateCorners(xdest, y);
+				if(dx < 0){
+					if(topLeft || bottomLeft){
+						dx = 0;
+						xtemp = currCol * tileSize + cwidth / 2;
+					}else{
+						xtemp += dx;
+					}
+				}
+				
+				if(dx > 0){
+					if(topRight || bottomRight){
+						dx = 0;
+						xtemp = (currCol + 1) * tileSize - cwidth / 2;
+					}else{
+						xtemp += dx;
+					}
+				}
 			}
-		}
+		});
 		
-		if(dy > 0){
-			if(bottomLeft || bottomRight){
-				dy = 0;
-				falling = false;
-				ytemp = (currRow + 1) * tileSize - cheight / 2;
-			}else{
-				ytemp += dy;
+		Thread calcY = new Thread(new Runnable() {
+			public void run() {
+				currRow = (int)y / tileSize;
+				ytemp = y;
+				ydest = y + dy;
+				calculateCorners(x, ydest);
+				if(dy < 0){
+					if(topLeft || topRight){
+						dy = 0;
+						ytemp = currRow * tileSize + cheight / 2;
+					}else{
+						ytemp += dy;
+					}
+				}
+				
+				if(dy > 0){
+					if(bottomLeft || bottomRight){
+						dy = 0;
+						falling = false;
+						ytemp = (currRow + 1) * tileSize - cheight / 2;
+					}else{
+						ytemp += dy;
+					}
+				}
+				
+				if(!falling){
+					calculateCorners(x, ydest + 1);
+					if(!bottomLeft && !bottomRight){
+						falling = true;
+					}		
+				}	
 			}
-		}
+		});
 		
-		calculateCorners(xdest, y);
-		if(dx < 0){
-			if(topLeft || bottomLeft){
-				dx = 0;
-				xtemp = currCol * tileSize + cwidth / 2;
-			}else{
-				xtemp += dx;
-			}
+		calcX.start();
+		calcY.start();
+		try {
+			calcX.join();
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
 		}
-		
-		if(dx > 0){
-			if(topRight || bottomRight){
-				dx = 0;
-				xtemp = (currCol + 1) * tileSize - cwidth / 2;
-			}else{
-				xtemp += dx;
-			}
+		try {
+			calcY.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
-			
-		if(!falling){
-			calculateCorners(x, ydest + 1);
-			if(!bottomLeft && !bottomRight){
-				falling = true;
-			}		
-		}	
 	}
 	
 	public int getX(){
